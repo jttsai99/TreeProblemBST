@@ -26,7 +26,7 @@ class BST(Generic[T, K]):
         """
         self.root = root
         self.key = key  # created the function already and automatically grabs the amount from the object
-        self._num_nodes = 1
+        self._num_nodes = 0
         # self.add_value(value)
         ...
 
@@ -77,12 +77,14 @@ class BST(Generic[T, K]):
             while (cur is not None):
                 if (self.key(node.value) < self.key(cur.value)):
                     if (cur.left is None):
+                        node.parent = cur
                         cur.left = node
                         cur = None
                     else:
                         cur = cur.left
                 else:
                     if (cur.right is None):
+                        node.parent = cur
                         cur.right = node
                         cur = None
                     else:
@@ -100,6 +102,8 @@ class BST(Generic[T, K]):
         :return:
         """
         cur = self.root
+        if cur is None:
+            raise MissingValueError
         while (cur is not None):
             if (value == self.key(cur.value)):
                 return cur
@@ -107,18 +111,23 @@ class BST(Generic[T, K]):
                 cur = cur.left
             else:
                 cur = cur.right
-            return None
+        if cur is None:
+            raise MissingValueError
 
-    def get_max_node(self) -> BSTNode[T]:
+    def get_max_node(self,node = None) -> BSTNode[T]:
         """
         Return the node with the largest value in the BST
         :return:
         :raises EmptyTreeError if the tree is empty
         """
-        cur = self.root
+        if node is None:
+            cur = self.root
+        else:
+            cur = node
         while (cur.right is not None):
             cur = cur.right
-        return cur.value
+            #print(cur.value)
+        return cur
 
     def get_min_node(self) -> BSTNode[T]:
         """
@@ -128,7 +137,7 @@ class BST(Generic[T, K]):
         cur = self.root
         while (cur.left is not None):
             cur = cur.left
-        return cur.value
+        return cur
 
     def remove_value(self, value: K) -> None:
         """
@@ -140,7 +149,33 @@ class BST(Generic[T, K]):
         :return:
         :raises MissingValueError if the node does not exist
         """
+        node_to_remove = self.get_node(value)
+        if node_to_remove.has_no_children():
+            node_to_remove.parent.remove_child(node_to_remove)
+        elif node_to_remove.num_children == 1:
+            if node_to_remove.left is not None:
+                successor = self.get_max_node(node_to_remove.left)
+            else:
+                successor = node_to_remove.right
+            successor.parent.remove_child(successor)
+            node_to_remove.parent.replace_child(node_to_remove,successor)
+            del node_to_remove
+        else:
+            successor = self.get_max_node(node_to_remove.left)
+            successor.parent.remove_child(successor)
+            node_to_remove.parent.replace_child(node_to_remove,successor)
+            del node_to_remove
+        self._num_nodes -= 1
+
         ...
+
+    # def print_tree(self):
+    #     cur = self.root
+    #     while cur is not None:
+    #         print(cur.value)
+    #         cur = cur.left
+
+
 
     def __eq__(self, other: object) -> bool:
         if self is other:
