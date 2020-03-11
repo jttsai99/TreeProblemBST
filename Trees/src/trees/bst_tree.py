@@ -26,7 +26,7 @@ class BST(Generic[T, K]):
         """
         self.root = root
         self.key = key  # created the function already and automatically grabs the amount from the object
-        self._num_nodes = 0
+        self._num_nodes = 1
         # self.add_value(value)
         ...
 
@@ -38,7 +38,7 @@ class BST(Generic[T, K]):
         """
         return self._get_height(self.root)
 
-    def _get_height(self,node):
+    def _get_height(self,node) -> int:
         if node is None:
             return -1
         left_side = self._get_height(node.left)
@@ -52,7 +52,7 @@ class BST(Generic[T, K]):
         """
         return self._get_length(self.root)
 
-    def _get_length(self,node):
+    def _get_length(self,node) -> int :
         if node is None:
             return 0
         else:
@@ -102,8 +102,7 @@ class BST(Generic[T, K]):
         :return:
         """
         cur = self.root
-        if cur is None:
-            raise MissingValueError
+
         while (cur is not None):
             if (value == self.key(cur.value)):
                 return cur
@@ -113,6 +112,7 @@ class BST(Generic[T, K]):
                 cur = cur.right
         if cur is None:
             raise MissingValueError
+        return cur
 
     def get_max_node(self,node = None) -> BSTNode[T]:
         """
@@ -166,6 +166,21 @@ class BST(Generic[T, K]):
             node_to_remove.parent.replace_child(node_to_remove,successor)
             del node_to_remove
         self._num_nodes -= 1
+
+        # if node_to_remove.left is not None and node_to_remove.right is None:
+        #     node_to_remove.left.parent = node_to_remove.parent
+        #     node_to_remove.parent = node_to_remove.left
+        # elif node_to_remove.right is not None and node_to_remove.left is None:
+        #     node_to_remove.right = node_to_remove.parent
+        #     node_to_remove.parent = node_to_remove.right
+        # elif node_to_remove.left is not None and node_to_remove.right is not None:
+        #     node_to_remove.left.parent = node_to_remove.parent
+        #     node_to_remove.parent = node_to_remove.left
+        #     node_to_remove.right.parent = node_to_remove.left
+        # else:
+        #     node_to_remove.parent = None
+
+
 
         ...
 
