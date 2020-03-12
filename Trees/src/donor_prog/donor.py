@@ -5,3 +5,4 @@ class Donor(object):
     def __init__(self,name: int, amount: int):
         self.name = name
         self.amount = amount
+
