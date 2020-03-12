@@ -114,6 +114,35 @@ class TestBST(unittest.TestCase):
         #othertree.print_tree()
         self.assertEqual(tree, othertree)
 
+    def test_remove_value_len(self):
+        tree = BST()
+        tree.add_value(100)
+        tree.add_value(80)
+        tree.add_value(90)
+        tree.add_value(200)
+        tree.add_value(70)
+        #print(len(tree))
+        tree.remove_value(80)
+        #print(len(tree))
+        #tree.print_tree()
+        self.assertEqual(4, len(tree))
+
+    def test_remove_root_nochildren(self):
+        tree=BST()
+        tree.add_value(100)
+        #print("tree length:",len(tree))
+        tree.remove_value(100)
+        #print("tree length after:",len(tree))
+        self.assertEqual(0, len(tree))
+    #
+    # def test_remove_root_one_children(self):
+    #     tree=BST()
+    #     tree.add_value(100)
+    #     tree.add_value(50)
+    #     print("tree length:",len(tree))
+    #     tree.remove_value(100)
+    #     print("tree length after:",len(tree))
+    #     self.assertEqual(1, len(tree))
 
 if __name__ == '__main__':
     unittest.main()

@@ -149,8 +149,11 @@ class BST(Generic[T, K]):
         :return:
         :raises MissingValueError if the node does not exist
         """
+
         node_to_remove = self.get_node(value)
-        if node_to_remove.has_no_children():
+        if node_to_remove.parent is None:
+            self.root = None
+        elif node_to_remove.has_no_children():
             node_to_remove.parent.remove_child(node_to_remove)
         elif node_to_remove.num_children == 1:
             if node_to_remove.left is not None:
@@ -158,37 +161,20 @@ class BST(Generic[T, K]):
             else:
                 successor = node_to_remove.right
             successor.parent.remove_child(successor)
-            node_to_remove.parent.replace_child(node_to_remove,successor)
+            node_to_remove.parent.replace_child(node_to_remove, successor)
             del node_to_remove
         else:
             successor = self.get_max_node(node_to_remove.left)
             successor.parent.remove_child(successor)
-            node_to_remove.parent.replace_child(node_to_remove,successor)
+            node_to_remove.parent.replace_child(node_to_remove, successor)
             del node_to_remove
         self._num_nodes -= 1
-
-        # if node_to_remove.left is not None and node_to_remove.right is None:
-        #     node_to_remove.left.parent = node_to_remove.parent
-        #     node_to_remove.parent = node_to_remove.left
-        # elif node_to_remove.right is not None and node_to_remove.left is None:
-        #     node_to_remove.right = node_to_remove.parent
-        #     node_to_remove.parent = node_to_remove.right
-        # elif node_to_remove.left is not None and node_to_remove.right is not None:
-        #     node_to_remove.left.parent = node_to_remove.parent
-        #     node_to_remove.parent = node_to_remove.left
-        #     node_to_remove.right.parent = node_to_remove.left
-        # else:
-        #     node_to_remove.parent = None
-
-
-
-        ...
 
     # def print_tree(self):
     #     cur = self.root
     #     while cur is not None:
     #         print(cur.value)
-    #         cur = cur.left
+    #         cur = cur.right
 
 
 
