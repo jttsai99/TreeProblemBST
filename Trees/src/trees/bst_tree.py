@@ -129,12 +129,15 @@ class BST(Generic[T, K]):
             #print(cur.value)
         return cur
 
-    def get_min_node(self) -> BSTNode[T]:
+    def get_min_node(self, node = None) -> BSTNode[T]:
         """
         Return the node with the smallest value in the BST
         :return:
         """
-        cur = self.root
+        if node is None:
+            cur = self.root
+        else:
+            cur = node
         while (cur.left is not None):
             cur = cur.left
         return cur
@@ -149,33 +152,29 @@ class BST(Generic[T, K]):
         :return:
         :raises MissingValueError if the node does not exist
         """
-
-        node_to_remove = self.get_node(value)
-        if node_to_remove.parent is None:
-            self.root = None
-        elif node_to_remove.has_no_children():
-            node_to_remove.parent.remove_child(node_to_remove)
-        elif node_to_remove.num_children == 1:
-            if node_to_remove.left is not None:
-                successor = self.get_max_node(node_to_remove.left)
+        node_to_remove = self.get_node(value)  # finds the node if not found raise MissingValueError
+        # print("node to remove:", node_to_remove.value)
+        # print("number of children:",node_to_remove.num_children())
+        if node_to_remove.has_no_children():  # check if given node have a left or right
+            if node_to_remove.parent is None:  # if this is the root of the tree
+                self.root = None        #set root back to none
             else:
-                successor = node_to_remove.right
-            successor.parent.remove_child(successor)
-            node_to_remove.parent.replace_child(node_to_remove, successor)
-            del node_to_remove
-        else:
+                node_to_remove.parent.remove_child(node_to_remove)  #if it has a parent just remove itself
+
+
+        elif node_to_remove.num_children() == 1:
+            node_to_remove_child = node_to_remove.left if node_to_remove.left is not None else node_to_remove.right
+            if node_to_remove.parent is None:       #Trying to remove root of tree No Parent
+               self.root = node_to_remove_child
+               self.root.parent = None
+            else:       #if it is not the root and has only one child
+                node_to_remove.parent.replace_child(node_to_remove,node_to_remove_child)
+
+        else: #Two Children cases
             successor = self.get_max_node(node_to_remove.left)
-            successor.parent.remove_child(successor)
-            node_to_remove.parent.replace_child(node_to_remove, successor)
-            del node_to_remove
+            self.remove_value(self.key(successor.value))
+            node_to_remove.value = successor.value
         self._num_nodes -= 1
-
-    # def print_tree(self):
-    #     cur = self.root
-    #     while cur is not None:
-    #         print(cur.value)
-    #         cur = cur.right
-
 
 
     def __eq__(self, other: object) -> bool:

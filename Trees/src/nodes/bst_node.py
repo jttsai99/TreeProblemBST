@@ -1,6 +1,7 @@
 import copy
 from typing import Generic, Iterable, TypeVar, Optional
 
+from Trees.src.errors import MissingValueError
 
 T = TypeVar('T')
 
@@ -54,7 +55,7 @@ class BSTNode(Generic[T]):
         return copy_node
 
 
-    def num_children(self):
+    def num_children(self) -> int:
         if self.left is not None and self.right is None:
             return 1
         elif self.left is None and self.right is not None:
@@ -64,29 +65,27 @@ class BSTNode(Generic[T]):
         else:
             return 0
 
-    def has_no_children(self):
-        if self.left is None and self.right is None:
-            return True
+    def has_no_children(self) -> bool:
+        return self.num_children() == 0
 
     def remove_child(self,node):
-        if self.left == node:
-            #print(self.left.value)
-            self.left = None
-        else:
-            #print(self.right.value)
-            self.right = None
+        self.replace_child(node,None)
 
     def replace_child(self,targetnode,replacementnode):
-        if targetnode == targetnode.parent.left:
-            targetnode.parent.left = replacementnode
+        if targetnode is self.left:
+            self.left = replacementnode
         else:
-            targetnode.parent.right = replacementnode
-        replacementnode.parent = self
-        replacementnode.left = targetnode.left
-        replacementnode.right = targetnode.right
-        return
+            self.right = replacementnode
+        if replacementnode is not None:
+            replacementnode.parent = self
+        if targetnode is not None:
+            targetnode.parent = None
 
 
 
-    def __eq__(self, other: object) -> bool:
-        return self.value == other.value
+    def __eq__(self, other: Optional['BSTNode[T]']) -> bool:
+        raise NotImplementedError()
+        # if isinstance(other,BSTNode):
+        #     return self.value == other.value
+        # else:
+        #     return False
