@@ -1,121 +1,65 @@
 # Your solution for the donor problem here
-from Trees.src.trees.bst_tree import BST
-from Trees.src.donor_prog.donor import Donor
 import sys
+from typing import List
 
-def get_tree_list(node, l):
-    if (node == None):
-        return
-    get_tree_list(node.left, l)
-    l.append(node.value)
-    get_tree_list(node.right, l)
+from Trees.src.trees.bst_tree import BST
+from .Trees.src.donor_prog.donor import Donor
 
+def returnBST(filepath)->BST:
+    newbst = BST(key=lambda x:x.amount)
+    with open(filepath) as inputfile:
+        for i in inputfile:
+            name, value = i.split(sep=":")
+            newdonor = Donor(name, value)
+            newbst.add_value(newdonor)
+    return newbst
 
-def inorder(tree, shoudprint=True):
-    l = []
-    get_tree_list(tree.root, l)
-    if (shoudprint):
-        print(l)
-    return l
+def main():
+    donorbst = returnBST(sys.argv[1])
+    donorfunctions(donorbst, sys.argv[2])
 
+def donorfunctions(thebst , arg2):
+    if arg2 == "rich":
+        return getrich(thebst)
+    elif arg2 == "cheap":
+        return getcheap(thebst)
+    elif arg2 == "all":
+        return getall(thebst)
+    elif arg2 =="who":
+        whoval = sys.argv[3]
+        return getwho(thebst,whoval)
 
-def read_donors(filename):
-    f = open(filename, "r")
-    donors = []
-    for i in f.readlines():
-        try:
-            arr = i.split(":")
-            val1 = arr[0].strip()
-            val2 = arr[1].replace(" ", "").strip()
-            val2 = int(val2)
-            donors.append(Donor(val1, val2))
-        except:
-            continue
-    return donors
+def getrich(abst):
+    maxnode = abst.get_max_node()
+    statement = "{} with a donation of {}".format(maxnode.name,maxnode.amount)
+    return statement
 
+def getcheap(abst):
+    minnode = abst.get_min_node()
+    statement = "{} with a donation of {}".format(minnode.name, minnode.amount)
+    return statement
 
-donors = read_donors(sys.argv[1])
+def getall(abst):
+    pass
 
-
-def make_bst(donations):
-    dic = {}
-    tree = BST()
-    for donation in donations:
-        dic[donation.amount] = donation
-        tree.add_value(donation.amount)
-    return tree, dic
-
-
-tree, dic = make_bst(donors)
-inorderlist = inorder(tree, shoudprint=False)
-
-
-def printall():
-    for value in inorderlist:
-        print(dic[value])
-
-
-def maxdonor():
-    maxd = tree.get_max_node()
-    print(dic[maxd.value])
+def getwho(abst,whovalue):
+    if "+" not in whovalue and "-" not in whovalue:
+        if abst.get_node(int(whovalue)) == "MissingValueError":
+            return "No Match"
+        else:
+            retrieve = abst.get_node(int(whovalue))
+            statement = "{} with a donation of {}".format(retrieve.name, retrieve.amount)
+            return statement
+    elif "+" in whovalue:
+        pass
+    elif "-" in whovalue:
+        pass
 
 
-def mindonor():
-    maxd = tree.get_min_node()
-    print(dic[maxd.value])
+if __name__ == '__main__':
+    main()
 
 
-def donor_with(amt):
-    if (amt in dic):
-        print(dic[amt])
-    else:
-        print("No Match")
 
 
-def donor_with_greater(amt):
-    found = False
-    for donation in inorderlist:
-        if (donation > amt):
-            print(dic[donation])
-            found = True
-            break
-    if (not found):
-        print("No Match")
 
-
-def donor_with_less(amt):
-    found = False
-    inorderlist.reverse()
-    for donation in inorderlist:
-        if (donation < amt):
-            print(dic[donation])
-            found = True
-            break
-    if (not found):
-        print("No Match")
-    inorderlist.reverse()
-
-
-def process_args():
-    args = sys.argv
-    args = args[1:]
-    if (len(args) <= 1):
-        return
-    if (args[1] == "all"):
-        printall()
-    elif (args[1] == "rich"):
-        maxdonor()
-    elif (args[1] == "cheap"):
-        mindonor()
-    elif (args[1] == "who"):
-        if (len(args) <= 2):
-            return
-        if (args[2][0] == "+"):
-            donor_with_greater(int(args[2][1:]))
-        elif (args[2][0] == "-"):
-            donor_with_less(int(args[2][1:]))
-        elif (args[2][0].isdigit()):
-            donor_with(int(args[2]))
-
-
-process_args()
